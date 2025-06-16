@@ -18,18 +18,17 @@ def main():
             st.warning("Please enter your OpenAI API key.")
             return
 
-    # Load the model and chain once
-    if "qa_chain" not in st.session_state:
-        model = init_chat_model("gpt-4o-mini", model_provider="openai")
-        text = extract_pdf_text("AcademicHistoryYK.pdf")
-        vs = create_vectorstore(text)
-        st.session_state.qa_chain = get_conversational_chain(vs)
+    uploaded_file = st.file_uploader("Upload a PDF", type="pdf")
 
-    # Ask question
-    question = st.text_input("Ask a question about the PDF:", key="question_input")
-    if question:
-        response = st.session_state.qa_chain.run(question)
-        st.write(response)
+    if uploaded_file is not None:
+        text = extract_pdf_text(uploaded_file)
+        vs = create_vectorstore(text)
+        qa_chain = get_conversational_chain(vs)
+
+        question = st.text_input("Ask a question:", key="question_input")
+        if question:
+            response = qa_chain.run(question)
+            st.write(response)
 
 
 if __name__ == "__main__":

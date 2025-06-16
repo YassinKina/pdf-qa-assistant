@@ -1,5 +1,8 @@
-from PyPDF2 import PdfReader
+import fitz
 
-def extract_pdf_text(pdf_path):
-    reader = PdfReader(pdf_path)
-    return "\n".join([page.extract_text() for page in reader.pages if page.extract_text()])
+def extract_pdf_text(uploaded_file):
+    text = ""
+    with fitz.open(stream=uploaded_file.read(), filetype="pdf") as doc:
+        for page in doc:
+            text += page.get_text()
+    return text
